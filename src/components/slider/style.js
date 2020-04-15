@@ -31,5 +31,8 @@ export const SliderContainer = styled.div`
     .swiper-pagination-bullet-active {
       background: ${style["theme-color"]};
     }
+    .swiper-button-prev, .swiper-button-next {
+      color: ${style["theme-color"]}
+    }
   }
 `

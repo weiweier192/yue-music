@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { SliderContainer } from './style'
+import { SliderContainer } from './style.js'
 import "swiper/css/swiper.css"
 import Swiper from 'swiper'
 
@@ -15,7 +15,11 @@ function Slider (props) {
           delay: 3000,
           disableOnInteraction: false
         },
-        pagination: { el: ".swiper-pagination" }
+        pagination: { el: ".swiper-pagination" },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        }
       })
       setSliderSwiper(newSliderSwiper)
     }
@@ -39,6 +43,8 @@ function Slider (props) {
           }
         </div>
         <div className="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
       </div>
     </SliderContainer>
   )
