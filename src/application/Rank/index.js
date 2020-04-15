@@ -1,2 +1,9 @@
 import React from 'react'
-export default React.mome()
+function Rank (props) {
+  return (
+    <div>
+      <div>Rank</div>
+    </div>
+  )
+}
+export default React.memo(Rank)

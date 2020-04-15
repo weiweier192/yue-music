@@ -1,2 +1,9 @@
 import React from 'react'
-export default React.mome()
+function Recommend (props) {
+  return (
+    <div>
+      <div>Recommend</div>
+    </div>
+  )
+}
+export default React.memo(Recommend)
