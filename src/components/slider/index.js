@@ -43,8 +43,8 @@ function Slider (props) {
           }
         </div>
         <div className="swiper-pagination"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <div className="swiper-button-prev"></div>
+        <div className="swiper-button-next"></div>
       </div>
     </SliderContainer>
   )
