@@ -14,8 +14,14 @@ function Recommend (props) {
   const { bannerList, recommendList, isLoading } = props
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props
   useEffect(() => {
-    getBannerDataDispatch()
-    getRecommendListDataDispatch()
+    // 如果页面有数据，则不发请求
+    // immutable数据的长度为size
+    if (!bannerList.size) {
+      getBannerDataDispatch()
+    }
+    if (!recommendList.size) {
+      getRecommendListDataDispatch()
+    }
   }, [])
   const bannerListJS = bannerList ? bannerList.toJS() : []
   const recommendListJS = recommendList ? recommendList.toJS() : []
@@ -27,7 +33,7 @@ function Recommend (props) {
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
       </Scroll>
-      {isLoading ? <Loading></Loading>: null}
+      {isLoading ? <Loading></Loading> : null}
     </Content>
   )
 }
