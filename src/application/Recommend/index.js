@@ -3,12 +3,15 @@ import Slider from '../../components/slider'
 import RecommendList from '../../components/list'
 import Scroll from '../../baseUI/scroll/index.js'
 import { Content } from './style.js'
+import { forceCheck } from 'react-lazyload'
 
 import { connect } from 'react-redux'
 import * as actionTypes from './store/actionCreators.js'
 
+import Loading from '../../baseUI/loading/index'
+
 function Recommend (props) {
-  const { bannerList, recommendList } = props
+  const { bannerList, recommendList, isLoading } = props
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props
   useEffect(() => {
     getBannerDataDispatch()
@@ -18,12 +21,13 @@ function Recommend (props) {
   const recommendListJS = recommendList ? recommendList.toJS() : []
   return (
     <Content>
-      <Scroll className="list">
+      <Scroll className="list" onScroll={forceCheck}>
         <div>
           <Slider bannerList={bannerListJS}></Slider>
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
       </Scroll>
+      {isLoading ? <Loading></Loading>: null}
     </Content>
   )
 }
@@ -33,7 +37,8 @@ const mapStateToProps = state => ({
   // 不要在这里将数据toJS
   // 不然每次diff比对props时都是不一样的引用，导致不必要的重渲染，属于滥用immutable
   bannerList: state.getIn(['recommend', 'bannerList']),
-  recommendList: state.getIn(['recommend', 'recommendList'])
+  recommendList: state.getIn(['recommend', 'recommendList']),
+  isLoading: state.getIn(['recommend', 'isLoading'])
 })
 const mapDispatchToProps = dispatch => {
   return {

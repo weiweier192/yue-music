@@ -12,6 +12,11 @@ export const changeRecommendList = (data) => ({
   data: fromJS(data)
 })
 
+export const isLoading = data => ({
+  type: actionTypes.IS_LOADING,
+  data
+})
+
 export const getBannerList = () => {
   return dispatch => {
     getBannerRequest().then(data => {
@@ -26,6 +31,7 @@ export const getRecommendList = () => {
   return dispatch => {
     getRecommendListRequest().then(data => {
       dispatch(changeRecommendList(data.result))
+      dispatch(isLoading(false))
     }).catch(err => {
       console.log('recommend', err)
     })
