@@ -3,6 +3,8 @@ import style from '../../assets/global-style'
 
 export const ListWrapper = styled.div`
   max-width: 100%;
+  border-radius: 6px;
+  background: #fff;
   .title {
     font-weight: 700;
     padding-left: 6px;

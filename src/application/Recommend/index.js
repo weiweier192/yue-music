@@ -1,11 +1,13 @@
 import React from 'react'
 import Slider from '../../components/slider'
 import RecommendList from '../../components/list'
+import Scroll from '../../baseUI/scroll/index.js'
+import { Content } from './style.js'
 
 function Recommend (props) {
   // mock数据
   const bannerList = [1, 2, 3, 4].map(item => {
-    return {imageUrl: "http://p1.music.126.net/ZYLJ2oZn74yUz5x8NBGkVA==/109951164331219056.jpg"}
+    return { imageUrl: "http://p1.music.126.net/ZYLJ2oZn74yUz5x8NBGkVA==/109951164331219056.jpg" }
   })
   const recommendList = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(item => {
     return {
@@ -16,10 +18,14 @@ function Recommend (props) {
     }
   })
   return (
-    <div>
-      <Slider bannerList={bannerList}></Slider>
-      <RecommendList recommendList={recommendList}></RecommendList>
-    </div>
+    <Content>
+      <Scroll className="list">
+        <div>
+          <Slider bannerList={bannerList}></Slider>
+          <RecommendList recommendList={recommendList}></RecommendList>
+        </div>
+      </Scroll>
+    </Content>
   )
 }
 export default React.memo(Recommend)
