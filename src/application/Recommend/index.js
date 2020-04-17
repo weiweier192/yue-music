@@ -13,6 +13,7 @@ import Loading from '../../baseUI/loading/index'
 function Recommend (props) {
   const { bannerList, recommendList, isLoading } = props
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props
+  // 优化
   useEffect(() => {
     // 如果页面有数据，则不发请求
     // immutable数据的长度为size
@@ -23,6 +24,7 @@ function Recommend (props) {
       getRecommendListDataDispatch()
     }
   }, [])
+  
   const bannerListJS = bannerList ? bannerList.toJS() : []
   const recommendListJS = recommendList ? recommendList.toJS() : []
   return (
