@@ -17,17 +17,6 @@ import {
   getSingerList,
   refreshMoreSingerList
 } from './store/actionCreators.js'
-// import { getSingerListRequest } from '../../api/request.js'
-// import { update } from 'immutable'
-
-
-// const singerList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(item => {
-//   return {
-//     picUrl: "https://p2.music.126.net/uTwOm8AEFFX_BYHvfvFcmQ==/109951164232057952.jpg",
-//     name: '隔壁裤衩',
-//     accountId: 2022202
-//   }
-// })
 
 function Singers (props) {
   let [category, setCategory] = useState('')
@@ -64,7 +53,7 @@ function Singers (props) {
             return (
               <ListItem key={item.accountId + "" + index}>
                 <div className="img_wrapper">
-                  <LazyLoad placeholder={<img width="100%" height="100%" src={require('../../assets/music.png')} alt="music" />}>
+                  <LazyLoad placeholder={<img width="100%" height="100%" src={require('../../assets/singer.png')} alt="music" />}>
                     <img src={`${item.picUrl}?param=300x300`} width="100%" height="100%" alt="music" />
                   </LazyLoad>
                 </div>

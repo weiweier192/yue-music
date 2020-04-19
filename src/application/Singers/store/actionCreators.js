@@ -66,7 +66,7 @@ export const refreshMoreHotSingerList = () => {
 
 // 第一次加载对应类别的歌手
 export const getSingerList = (category, alpha) => {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     getSingerListRequest(category, alpha, 0).then(res => {
       const data = res.artists
       dispatch(changeSingerList(data))
