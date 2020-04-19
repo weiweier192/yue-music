@@ -9,6 +9,7 @@ import { GlobalStyle } from './style.js'
 import { renderRoutes } from 'react-router-config'
 import routes from './routes/index.js'
 import { HashRouter } from 'react-router-dom'
+import {Data} from './application/Singers/data.js'
 
 function App () {
   return (
@@ -17,7 +18,9 @@ function App () {
         <div className="App">
           <GlobalStyle></GlobalStyle>
           <IconStyle></IconStyle>
-          {renderRoutes(routes)}
+          <Data>
+            {renderRoutes(routes)}
+          </Data>
         </div>
       </HashRouter>
     </Provider>

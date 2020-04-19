@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { connect } from 'react-redux'
 import Horizen from '../../baseUI/horizen-item/index.js'
 import { categoryTypes, alphaTypes } from '../../api/config.js'
@@ -17,24 +17,35 @@ import {
   getSingerList,
   refreshMoreSingerList
 } from './store/actionCreators.js'
+import { CategoryDataContext } from './data.js'
+import { CHANGE_CATEGORY, CHANGE_ALPHA } from './data.js'
 
 function Singers (props) {
-  let [category, setCategory] = useState('')
-  let [alpha, setAlpha] = useState('')
+  // let [category, setCategory] = useState('')
+  // let [alpha, setAlpha] = useState('')
+  const { data, dispatch } = useContext(CategoryDataContext)
+  // 获取category和alpha的值
+  const { category, alpha } = data.toJS()
   const { singerList, isLoading, pullUpLoading, pullDownLoading, pageCount } = props
   const { getHotSingerDispatch, updateDispatch, pullDownRefreshDispatch, pullUpRefreshDispatch } = props
 
   useEffect(() => {
-    getHotSingerDispatch()
+    // 当歌手列表不为空时，就不发 Ajax 请求，
+    // 同时能够记忆之前的分类，让分类和列表对应
+    if (!singerList.size) {
+      getHotSingerDispatch()
+    }
   }, [])
 
 
   let handleUpdateAlpha = val => {
-    setAlpha(val)
+    // setAlpha(val)
+    dispatch({ type: CHANGE_ALPHA, data: val })
     updateDispatch(category, val)
   }
   let handleUpdateCategory = val => {
-    setCategory(val)
+    // setCategory(val)
+    dispatch({ type: CHANGE_CATEGORY, data: val })
     updateDispatch(val, alpha)
   }
   let handlePullUp = () => {
