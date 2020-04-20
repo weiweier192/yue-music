@@ -13,3 +13,7 @@ export const getHotSingerListRequest = (count) => {
 export const getSingerListRequest = (category, alpha, count) => {
   return request.get(`/artist/list?cat=${category}&initial=${alpha.toLowerCase()}&offset=${count}`)
 }
+
+export const getRankListRequest = () => {
+  return request.get(`/toplist/detail`)
+}

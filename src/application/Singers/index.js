@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { connect } from 'react-redux'
 import Horizen from '../../baseUI/horizen-item/index.js'
 import { categoryTypes, alphaTypes } from '../../api/config.js'
