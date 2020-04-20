@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable'
 import { getRankListRequest } from '../../../api/request.js'
-import { CHANGE_BANNER } from '../../Recommend/store/actionTypes.js'
+// import { CHANGE_BANNER } from '../../Recommend/store/actionTypes.js'
 
 // actionTypes
 export const CHANGE_RANK_LIST = 'rank/CHANGE_RANK_LIST'
@@ -34,7 +34,7 @@ const defaultState = fromJS({
 
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
-    case CHANGE_BANNER:
+    case CHANGE_RANK_LIST:
       return state.set('rankList', action.data)
     case CHANGE_LOADING:
       return state.set('loading', action.data)
