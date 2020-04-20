@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import * as actionTypes from './store/actionCreators.js'
 
 import Loading from '../../baseUI/loading/index'
+import { renderRoutes } from 'react-router-config'
 
 function Recommend (props) {
   const { bannerList, recommendList, isLoading } = props
@@ -24,7 +25,7 @@ function Recommend (props) {
       getRecommendListDataDispatch()
     }
   }, [])
-  
+
   const bannerListJS = bannerList ? bannerList.toJS() : []
   const recommendListJS = recommendList ? recommendList.toJS() : []
   return (
@@ -36,6 +37,8 @@ function Recommend (props) {
         </div>
       </Scroll>
       {isLoading ? <Loading></Loading> : null}
+      {/* 将目前所在路由的下一层子路由加以渲染 */}
+      {renderRoutes(props.route.routes)}
     </Content>
   )
 }

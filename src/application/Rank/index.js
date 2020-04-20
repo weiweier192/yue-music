@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { getRankList } from './store/index.js'
 import { filterIndex, filterIdx } from '../../api/utils.js'
+
 import { renderRoutes } from 'react-router-config'
 import {
   Container,
