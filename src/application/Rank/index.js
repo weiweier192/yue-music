@@ -17,12 +17,13 @@ function Rank (props) {
   const { getRankListDataDispatch } = props
   // didMount时发送请求
   let rankList = list ? list.toJS() : []
-  console.log(props, rankList, list.size)
+
   useEffect(() => {
     if (!rankList.length) {
       getRankListDataDispatch()
     }
   }, [])
+  
   let globalStartIndex = filterIndex(rankList)
   let officialList = rankList.slice(0, globalStartIndex)
   let globalList = rankList.slice(globalStartIndex)

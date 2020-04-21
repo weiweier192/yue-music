@@ -12,7 +12,6 @@ const HeaderContainer = styled.div`
   width: 100%;
   line-height: 40px;
   color: ${style["font-color-light"]};
-  background-color: ${style["theme-color"]};
   z-index: 100;
   .back {
     margin-right: 5px;
@@ -26,22 +25,24 @@ const HeaderContainer = styled.div`
 `
 // 处理函数组件拿不到ref的问题，使用forwardRef
 const Header = React.forwardRef((props, ref) => {
-  const { handleClick, title } = props
+  const { handleClick, title, isMarquee } = props
   return (
     <HeaderContainer ref={ref}>
       <i className="iconfont back" onClick={handleClick}>&#xe655;</i>
-      <h1>{title}</h1>
+      {isMarquee ? <marquee><h2>{title}</h2></marquee> : <h2>{title}</h2>}
     </HeaderContainer>
   )
 })
 
 Header.defaultProps = {
   handleClick: () => { },
-  title: "标题"
+  title: "标题",
+  isMarquee: false
 }
 Header.propTypes = {
   handleClick: PropTypes.func,
-  title: PropTypes.string
+  title: PropTypes.string,
+  isMarquee: PropTypes.bool
 }
 
 export default React.memo(Header)

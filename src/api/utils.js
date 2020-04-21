@@ -40,3 +40,15 @@ export const filterIdx = name => {
   }
   return null
 }
+
+export const getName = nameArr => {
+  let nameStr = nameArr.length ? nameArr[0].name : '无'
+  if (nameArr.length > 1) {
+    for (let i = 1, len = nameArr.length; i < len; ++i) {
+      nameStr += " / " + nameArr[i].name
+    }
+  }
+  return nameStr
+}
+
+export const isEmptyObject = obj => !obj || Object.keys(obj).length === 0
