@@ -6,10 +6,12 @@ import { reducer as recommendReducer } from '../application/Recommend/store/inde
 import { reducer as singersReducer } from '../application/Singers/store/index.js'
 import { reducer as rankReducer } from '../application/Rank/store/index.js'
 import { reducer as albumReducer } from '../application/Album/store/index.js'
+import { reducer as singerInfoReducer } from '../application/Singer/store/index.js'
 
 export default combineReducers({
   recommend: recommendReducer,
   singers: singersReducer,
   rank: rankReducer,
-  album: albumReducer
+  album: albumReducer,
+  singerInfo: singerInfoReducer
 })

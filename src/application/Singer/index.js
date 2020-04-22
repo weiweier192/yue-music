@@ -1,10 +1,13 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
+import { connect } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { Container, ImgWrapper, CollectButton, BgLayer, SongListWrapper } from './style.js'
 import Header from '../../baseUI/header/index.js'
 import Scroll from '../../baseUI/scroll/index.js'
 import SongsList from '../SongsList/index.js'
 import { HEADER_HEIGHT } from '../../api/config.js'
+import { changeEnterLoading, getSingerInfo } from './store/actionCreators.js'
+import Loading from '../../baseUI/loading/index.js'
 
 function Singer (props) {
   const [showStatus, setShowStatus] = useState(true)
@@ -16,9 +19,19 @@ function Singer (props) {
   const layer = useRef()
   // 图片初始高度
   const initialHeight = useRef(0)
+
+  const { artist: immutableArtist, songs: immutableSongs, loading } = props
+  const { getSingerDataDispatch } = props
+
+  const artist = immutableArtist.size && immutableArtist.toJS()
+  const songs = immutableSongs.size && immutableSongs.toJS()
+
   // 往上偏移的尺寸，漏出圆角
   const OFFSET = 5
   useEffect(() => {
+    const id = props.match.params.id
+    getSingerDataDispatch(id)
+
     let h = imageWrapper.current.offsetHeight
     songScrollWrapper.current.style.top = `${h - OFFSET}px`;
     initialHeight.current = h
@@ -46,8 +59,8 @@ function Singer (props) {
 
     // 1.处理往下拉的情况，效果：图片放大，按钮跟着偏移
     if (newY > 0) {
-      imageDOM.style ["transform"] = `scale(${1 + percent})`;
-      buttonDOM.style ["transform"] = `translate3d(0, ${newY}px, 0)`;
+      imageDOM.style["transform"] = `scale(${1 + percent})`;
+      buttonDOM.style["transform"] = `translate3d(0, ${newY}px, 0)`;
       layerDOM.style.top = `${height - OFFSET + newY}px`;
 
     } else if (newY >= minScrollY) {
@@ -59,8 +72,8 @@ function Singer (props) {
       imageDOM.style.height = 0
       imageDOM.style.zIndex = -1
       // 按钮跟着移动且渐渐变透明
-      buttonDOM.style ["transform"] = `translate3d(0, ${newY}px, 0)`
-      buttonDOM.style ["opacity"] = `${1 - percent * 2}`
+      buttonDOM.style["transform"] = `translate3d(0, ${newY}px, 0)`
+      buttonDOM.style["opacity"] = `${1 - percent * 2}`
 
     } else if (newY < minScrollY) {
       // 3.往上滑动，但是遮罩超过 Header 部分
@@ -76,104 +89,105 @@ function Singer (props) {
     }
   }, [])
 
-  const artist = {
-    picUrl: "https://p2.music.126.net/W__FCWFiyq0JdPtuLJoZVQ==/109951163765026271.jpg",
-    name: "薛之谦",
-    hotSongs: [
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      {
-        name: "我好像在哪见过你",
-        ar: [{ name: "薛之谦" }],
-        al: {
-          name: "薛之谦专辑"
-        }
-      },
-      // 省略 20 条
-    ]
-  }
+  // const artist = {
+  //   picUrl: "https://p2.music.126.net/W__FCWFiyq0JdPtuLJoZVQ==/109951163765026271.jpg",
+  //   name: "薛之谦",
+  //   hotSongs: [
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     {
+  //       name: "我好像在哪见过你",
+  //       ar: [{ name: "薛之谦" }],
+  //       al: {
+  //         name: "薛之谦专辑"
+  //       }
+  //     },
+  //     // 省略 20 条
+  //   ]
+  // }
+
   return (
     <CSSTransition
       in={showStatus}
@@ -196,14 +210,29 @@ function Singer (props) {
         <SongListWrapper ref={songScrollWrapper}>
           <Scroll onScroll={handleScroll} ref={songScroll}>
             <SongsList
-              songs={artist.hotSongs}
+              songs={songs}
               showCollect={false}
             ></SongsList>
           </Scroll>
         </SongListWrapper>
+        {loading ? <Loading></Loading> : null}
       </Container>
     </CSSTransition>
   )
 }
 
-export default Singer
+const mapStateToProps = state => ({
+  artist: state.getIn(["singerInfo", "artist"]),
+  songs: state.getIn(["singerInfo", "songsOfArtist"]),
+  loading: state.getIn(["singerInfo", "loading"])
+})
+const mapDispatchToProps = dispatch => {
+  return {
+    getSingerDataDispatch (id) {
+      dispatch(changeEnterLoading(true))
+      dispatch(getSingerInfo(id))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Singer))

@@ -4,11 +4,12 @@ import { Container } from './style.js'
 import { CSSTransition } from 'react-transition-group'
 import Header from '../../baseUI/header/index.js'
 import Scroll from '../../baseUI/scroll/index.js'
-import { TopDesc, Menu, SongList, SongItem } from './style.js'
-import { getCount, getName, isEmptyObject } from '../../api/utils.js'
+import { TopDesc, Menu } from './style.js'
+import { getCount, isEmptyObject } from '../../api/utils.js'
 import style from '../../assets/global-style.js'
 import { changeEnterLoading, getAlbumList } from './store/actionCreators.js'
 import Loading from '../../baseUI/loading/index.js'
+import SongsList from '../SongsList/index.js'
 
 function Album (props) {
   const [showStatus, setShowStatus] = useState(true)
@@ -23,6 +24,7 @@ function Album (props) {
   useEffect(() => {
     getAlbumDataDispatch(id)
   }, [getAlbumDataDispatch, id])
+
   let currentAlbum = currentAlbumImmutable.size && currentAlbumImmutable.toJS()
 
   const headerEl = useRef()
@@ -98,37 +100,7 @@ function Album (props) {
       </Menu>
     )
   }
-  const renderSongList = () => {
-    return (
-      <SongList>
-        <div className="first_line">
-          <div className="play_all">
-            <i className="iconfont">&#xe6e3;</i>
-            <span> 播放全部 <span className="sum">(共 {currentAlbum.tracks.length} 首)</span></span>
-          </div>
-          <div className="add_list">
-            <i className="iconfont">&#xe62d;</i>
-            <span> 收藏 ({getCount(currentAlbum.subscribedCount)})</span>
-          </div>
-        </div>
-        <SongItem>
-          {
-            currentAlbum.tracks.map((item, index) => {
-              return (
-                <li key={index}>
-                  <span className="index">{index + 1}</span>
-                  <div className="info">
-                    <span>{item.name}</span>
-                    <span>{getName(item.ar)} - {item.al.name}</span>
-                  </div>
-                </li>
-              )
-            })
-          }
-        </SongItem>
-      </SongList>
-    )
-  }
+
   return (
     // 在退出动画执行结束时跳转路由
     // onExited={props.history.goBack}
@@ -153,14 +125,19 @@ function Album (props) {
             <div>
               {renderTopDesc()}
               {renderMenu()}
-              {renderSongList()}
+              {/* {renderSongList()} */}
+              <SongsList
+                collectCount={getCount(currentAlbum.subscribedCount)}
+                showCollect={true}
+                songs={currentAlbum.tracks}>
+              </SongsList>
             </div>
           </Scroll>
           : null
         }
         {enterLoading ? <Loading></Loading> : null}
       </Container>
-    </CSSTransition>
+    </CSSTransition >
   )
 }
 

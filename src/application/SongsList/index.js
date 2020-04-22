@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { SongItem, SongList } from './style.js'
 import { getName } from '../../api/utils.js'
 
@@ -50,5 +51,16 @@ const SongsList = React.forwardRef((props, refs) => {
     </SongList>
   )
 })
+
+SongsList.defaultProps = {
+  collectCount: 0,
+  showCollect: false,
+  songs: () => []
+}
+
+SongsList.propTypes = {
+  collectCount: PropTypes.number,
+  showCollect: PropTypes.bool,
+}
 
 export default React.memo(SongsList)
