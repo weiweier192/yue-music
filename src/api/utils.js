@@ -1,4 +1,3 @@
-import { RankTypes } from './config.js'
 
 export const getCount = (count) => {
   if (count < 0) return
@@ -32,13 +31,6 @@ export const filterIndex = rankList => {
       return i + 1
     }
   }
-}
-
-export const filterIdx = name => {
-  for (let key in RankTypes) {
-    if (RankTypes[key] === name) return key
-  }
-  return null
 }
 
 export const getName = nameArr => {

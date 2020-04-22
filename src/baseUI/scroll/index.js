@@ -46,7 +46,7 @@ const Scroll = forwardRef((props, ref) => {
     return debounce(pullDown, 300)
   }, [pullDown])
 
-  // 创建better-scroll
+  // 创建better-scroll实例
   useEffect(() => {
     const scroll = new BScroll(scrollContainerRef.current, {
       scrollX: direction === 'horizental',
@@ -73,6 +73,7 @@ const Scroll = forwardRef((props, ref) => {
   useEffect(() => {
     if (!bScroll || !onScroll) return
     bScroll.on('scroll', (scroll) => {
+      // console.log('scroll', scroll) // {x: 0, y: -270.84}
       onScroll(scroll)
     })
     return () => {
@@ -105,6 +106,7 @@ const Scroll = forwardRef((props, ref) => {
       bScroll.off('touchEnd')
     }
   }, [pullDownDebounce, pullDown, bScroll])
+  
   useImperativeHandle(ref, () => ({
     refresh () {
       if (bScroll) {

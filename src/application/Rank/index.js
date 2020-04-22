@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { getRankList } from './store/index.js'
-import { filterIndex, filterIdx } from '../../api/utils.js'
+import { filterIndex } from '../../api/utils.js'
 
 import { renderRoutes } from 'react-router-config'
 import {
@@ -23,17 +23,13 @@ function Rank (props) {
       getRankListDataDispatch()
     }
   }, [])
-  
+
   let globalStartIndex = filterIndex(rankList)
   let officialList = rankList.slice(0, globalStartIndex)
   let globalList = rankList.slice(globalStartIndex)
 
-  const enterDetail = name => {
-    const index = filterIdx(name)
-    if(index === null) {
-      alert('暂无数据！')
-      return
-    }
+  const enterDetail = detail => {
+    props.history.push(`/rank/${detail.id}`)
   }
   const renderSongList = list => {
     return list.length ? (
@@ -56,7 +52,7 @@ function Rank (props) {
               <ListItem
                 key={item.coverImgId}
                 tracks={item.tracks}
-                onClick={() => enterDetail(item.name)}
+                onClick={() => enterDetail(item)}
               >
                 <div className="img_wrapper">
                   <img src={item.coverImgUrl} alt="" />

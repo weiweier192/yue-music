@@ -5,6 +5,7 @@ import { categoryTypes, alphaTypes } from '../../api/config.js'
 import Scroll from '../../baseUI/scroll/index.js'
 import LazyLoad, { forceCheck } from 'react-lazyload'
 import Loading from '../../baseUI/loading/index.js'
+import {renderRoutes} from 'react-router-config'
 
 import { NavContainer, ListContainer, List, ListItem } from './style.js'
 import {
@@ -55,6 +56,10 @@ function Singers (props) {
     pullDownRefreshDispatch(category, alpha)
   }
 
+  const enterDetail = id => {
+    props.history.push(`/singers/${id}`)
+  }
+
   const renderSingerList = () => {
     const list = singerList ? singerList.toJS() : []
     return (
@@ -62,7 +67,7 @@ function Singers (props) {
         {
           list.map((item, index) => {
             return (
-              <ListItem key={item.accountId + "" + index}>
+              <ListItem onClick={() => enterDetail(item.id)} key={item.accountId + "" + index}>
                 <div className="img_wrapper">
                   <LazyLoad placeholder={<img width="100%" height="100%" src={require('../../assets/singer.png')} alt="music" />}>
                     <img src={`${item.picUrl}?param=300x300`} width="100%" height="100%" alt="music" />
@@ -76,7 +81,6 @@ function Singers (props) {
       </List>
     )
   }
-
 
   return (
     <div>
@@ -106,6 +110,7 @@ function Singers (props) {
         </Scroll>
         {isLoading ? <Loading show={isLoading}></Loading> : null}
       </ListContainer>
+      {renderRoutes(props.route.routes)}
     </div>
   )
 }
