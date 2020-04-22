@@ -187,3 +187,10 @@ export const alphaTypes = [{
   name: "Z"
 }
 ]
+
+// 播放模式
+export const playMode = {
+  sequence: 0,
+  loop: 0,
+  random: 2
+}
