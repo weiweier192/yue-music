@@ -44,3 +44,26 @@ export const getName = nameArr => {
 }
 
 export const isEmptyObject = obj => !obj || Object.keys(obj).length === 0
+
+let elementStyle = document.createElement("div").style
+let vender = (() => {
+  // 先判断浏览器类型
+  let transformNames = {
+    webkit: "webkitTransform",
+    Moz: "MozTransform",
+    O: "OTransform",
+    ms: "msTransform",
+    standard: "Transform"
+  }
+  for (let key in transformNames) {
+    if (elementStyle[transformNames[key]] !== undefined) {
+      return key
+    }
+  }
+  return false
+})()
+export function prefixStyle (style) {
+  if (vender === false) return false
+  if (vender === "standard") return style
+  return vender + style.charAt(0).toUpperCase() + style.substr(1)
+}

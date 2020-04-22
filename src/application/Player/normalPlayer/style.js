@@ -32,6 +32,27 @@ export const NormalPlayerContainer = styled.div`
       filter: none;
     }
   }
+  &.normal-enter,
+  &.normal-exit-done {
+    .top {
+      transform: translate3d(0, -100px, 0);
+    }
+    .bottom {
+      transform: translate3d(0, 100px, 0);
+    }
+  }
+  &.normal-enter-active,
+  &.normal-exit-active {
+    .top, .bottom {
+      transform: translate3d(0, 0, 0);
+      transition: all .4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+    }
+    opacity: 1;
+    transition: all .4s;
+  }
+  &.normal-exit-active {
+    opacity: 0;
+  }
 `
 export const Top = styled.div`
   position: relative;
@@ -70,7 +91,6 @@ export const Top = styled.div`
 export const Middle = styled.div`
   position: fixed;
   width: 100%;
-  // height: 200px;
   top: 80px;
   bottom: 170px;
   font-size: 0;
