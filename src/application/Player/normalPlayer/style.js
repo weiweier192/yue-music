@@ -138,6 +138,30 @@ export const Bottom = styled.div`
   left: 0;
   bottom: 50px;
 `
+export const ProgressWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  padding: 10px 0;
+  .time {
+    flex: 0 0 30px;
+    width: 30px;
+    line-height: 30px;
+    font-size: ${style["font-size-s"]};
+    color: ${style["font-color-desc"]};
+    &.time-l {
+      text-align: left;
+    }
+    &.time-r {
+      text-align: right;
+    }
+  }
+  .progress-bar-wrapper {
+    flex: 1;
+  }
+`
+
 export const Operators = styled.div`
   display: flex;
   box-sizing: border-box;
@@ -156,7 +180,6 @@ export const Operators = styled.div`
     i {
       font-size: 30px;
       font-weight: 300;
-      // color: ${style["theme-color"]};
     }
     i.icon-center {
       font-size: 40px;

@@ -78,8 +78,8 @@ export const MiniPlayerContainer = styled.div`
       color: ${style["theme-color"]};
     }
     .icon-mini {
-      font-size:16px;
       position: absolute;
+      font-size:16px;
       left: 8px;
       top: 8px;
       &.icon-play {
