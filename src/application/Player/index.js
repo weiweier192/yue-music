@@ -18,6 +18,9 @@ function Player (props) {
   const [currentTime, setCurrentTime] = useState(0)
   // 歌曲总长
   const [duration, setDuration] = useState(0)
+  // 记录当前的歌曲，以便下一次渲染时比对是否为一首歌
+  const [preSong, setPreSong] = useState({})
+
   const audioRef = useRef()
 
   // 歌曲播放进度
@@ -108,24 +111,30 @@ function Player (props) {
     }
   ]
 
+  // 先mock一份currentIndex
+  useEffect(() => {
+    // 默认播放第一个
+    changeCurrentIndexDispatch(0)
+  }, [])
+  useEffect(() => {
+    if (!playList.length ||
+      currentIndex === -1 ||
+      !playList[currentIndex] ||
+      playList[currentIndex].id === preSong.id) return
+    let current = playList[currentIndex]
+    changeCurrentDispatch(current) // 赋值currentSong
+    setPreSong(current)
+    audioRef.current.src = getSongUrl(current.id)
+    setTimeout(() => {
+      audioRef.current.play()
+    })
+    togglePlayingDispatch(true) // 播放状态
+    setCurrentTime(0) // 从头开始播放
+    setDuration((current.dt / 1000) | 0) // 时长 234
+  }, [playList, currentIndex])
 
   useEffect(() => {
-    if (!currentSong) return
-    //currentIndex默认为-1，临时改成0
-    changeCurrentIndexDispatch(0)
-    let current = playList[0]
-    // 赋值currentSong
-    changeCurrentDispatch(current)
-    audioRef.current.src = getSongUrl(current.id)
-    console.log(playing)
     playing ? audioRef.current.play() : audioRef.current.pause()
-    // 播放状态
-    togglePlayingDispatch(playing)
-    // 从头开始播放
-    setCurrentTime(0)
-    // 时长
-    setDuration((current.dt / 1000) | 0)
-    // console.log((current.dt / 1000) | 0) // 234
   }, [playing])
 
   // const currentSong = {
@@ -158,25 +167,25 @@ function Player (props) {
   // 2.上一首
   const handlePrev = useCallback(() => {
     // 播放列表只有一首歌
-    if(playList.length === 1) {
+    if (playList.length === 1) {
       handleLoop()
       return
     }
     let index = currentIndex - 1
-    if(index < 0) index = playList.length - 1
-    if(!playing) togglePlayingDispatch(true)
+    if (index < 0) index = playList.length - 1
+    if (!playing) togglePlayingDispatch(true)
     changeCurrentIndexDispatch(index)
   }, [playing])
   // 3.下一首
   const handleNext = useCallback(() => {
     // 播放列表只有一首歌
-    if(playList.length === 1) {
+    if (playList.length === 1) {
       handleLoop()
       return
     }
     let index = currentIndex + 1
-    if(index >= playList.length) index = 0
-    if(!playing) togglePlayingDispatch(true)
+    if (index >= playList.length) index = 0
+    if (!playing) togglePlayingDispatch(true)
     changeCurrentIndexDispatch(index)
   }, [playing])
   return (
