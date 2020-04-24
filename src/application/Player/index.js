@@ -13,7 +13,7 @@ import MiniPlayer from './miniPlayer/index.js'
 import NormalPlayer from './normalPlayer/index.js'
 import { getSongUrl, isEmptyObject, shuffle, findIndex } from '../../api/utils.js'
 import Toast from '../../baseUI/Toast/index.js'
-import {playMode} from '../../api/config.js'
+import { playMode } from '../../api/config.js'
 
 function Player (props) {
   // 目前播放时间
@@ -26,10 +26,10 @@ function Player (props) {
   const toastRef = useRef()
   const audioRef = useRef()
 
-  // 歌曲播放进度
-  let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration
-  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong, mode, sequencePlayList: immutableSequencePlayList, playList: immutablePlayList } = props
-  const { 
+  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong, 
+    mode, sequencePlayList: immutableSequencePlayList, playList: immutablePlayList 
+  } = props
+  const {
     toggleFullScreenDispatch,
     togglePlayingDispatch,
     changeCurrentIndexDispatch,
@@ -37,7 +37,9 @@ function Player (props) {
     changePlayListDispatch, // 改变playList
     changeModeDispatch, // 改变模式
   } = props
-
+  
+  // 歌曲播放进度
+  let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration
   const currentSong = immutableCurrentSong.toJS()
   const playList = immutablePlayList.toJS()
   const sequencePlayList = immutableSequencePlayList.toJS()
@@ -57,11 +59,11 @@ function Player (props) {
       let index = findIndex(currentSong, sequencePlayList)
       changeCurrentIndexDispatch(index)
       setModeText("顺序循环")
-    }else if (newMode === 1) {
+    } else if (newMode === 1) {
       // 单曲循环
       changePlayListDispatch(sequencePlayList)
       setModeText("单曲循环")
-    }else if(newMode === 2) {
+    } else if (newMode === 2) {
       // 随机播放
       let newList = shuffle(sequencePlayList)
       let index = findIndex(currentSong, newList)
@@ -79,7 +81,6 @@ function Player (props) {
     // 默认播放第一个
     changeCurrentIndexDispatch(0)
   }, [])
-
   useEffect(() => {
     if (!playList.length ||
       currentIndex === -1 ||
@@ -97,17 +98,14 @@ function Player (props) {
     setDuration((current.dt / 1000) | 0) // 时长 234
   }, [playList, currentIndex])
 
+  // 播放和暂停，通过监听playing变量来实现
   useEffect(() => {
     playing ? audioRef.current.play() : audioRef.current.pause()
   }, [playing])
-
-  // const currentSong = {
-  //   al: { picUrl: "https://p1.music.126.net/JL_id1CFwNJpzgrXwemh4Q==/109351164172892390.jpg" },
-  //   name: "木偶人",
-  //   ar: [{ name: "薛之谦" }]
-  // }
-
+  
+  // 通过点击播放|暂停按钮，来改变 playing
   const clickPlaying = useCallback((e, state) => {
+    // 它可以阻止把事件分派到其它节点
     e.stopPropagation()
     togglePlayingDispatch(state)
   })
@@ -122,11 +120,11 @@ function Player (props) {
   })
 
   // 上下曲切换
-  // 1.一首歌循环
+  // 1.单曲循环
   const handleLoop = () => {
     audioRef.current.currentTime = 0
     togglePlayingDispatch(true)
-    // audioRef.current.play()
+    audioRef.current.play()
   }
   // 2.上一首
   const handlePrev = useCallback(() => {
@@ -155,9 +153,9 @@ function Player (props) {
 
   // 当前歌曲播放完成后的处理
   const handleEnd = () => {
-    if(mode === playMode.loop) {
+    if (mode === playMode.loop) {
       handleLoop()
-    }else {
+    } else {
       handleNext()
     }
   }
