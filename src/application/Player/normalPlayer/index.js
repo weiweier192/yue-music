@@ -2,7 +2,6 @@ import React, { useRef } from 'react'
 import { CSSTransition } from 'react-transition-group'
 // JS 的帧动画插件
 import animations from 'create-keyframe-animation'
-import { getName } from '../../../api/utils.js'
 import {
   NormalPlayerContainer,
   Top,
@@ -13,14 +12,15 @@ import {
   ProgressWrapper
 } from './style.js'
 import ProgressBar from '../../../baseUI/progress-bar/index.js'
-import { prefixStyle, formatPlayTime } from '../../../api/utils.js'
+import { prefixStyle, formatPlayTime, getName } from '../../../api/utils.js'
+import { playMode } from '../../../api/config.js'
 
 function NormalPlayer (props) {
   const normalPlayerRef = useRef()
   const cdWrapperRef = useRef()
 
-  const { song, fullScreen, playing, percent, duration, currentTime } = props
-  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext } = props
+  const { song, fullScreen, playing, percent, duration, currentTime, mode } = props
+  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext, changeMode } = props
 
   const transform = prefixStyle("transform")
   // 计算偏移的辅助函数
@@ -88,6 +88,18 @@ function NormalPlayer (props) {
     // 不置为none现在全屏播放器页面还是存在
     normalPlayerRef.current.style.display = "none"
   }
+  // 改变模式mode，展现不同的图标
+  const getPlayMode = () => {
+    let content = null
+    if (mode === playMode.sequence) {
+      content = "&#xe625;"
+    } else if (mode === playMode.loop) {
+      content = "&#xe653;"
+    } else if (mode === playMode.random) {
+      content = "&#xe61b;"
+    }
+    return content
+  }
   return (
     <CSSTransition
       classNames="normal"
@@ -140,8 +152,11 @@ function NormalPlayer (props) {
             <span className="time time-r">{formatPlayTime(duration)}</span>
           </ProgressWrapper>
           <Operators>
-            <div className="icon">
-              <i className="iconfont">&#xe625;</i>
+            <div className="icon" onClick={changeMode}>
+              <i
+                className="iconfont"
+                dangerouslySetInnerHTML={{__html: getPlayMode()}}
+              ></i>
             </div>
             <div className="icon" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>

@@ -11,7 +11,8 @@ import {
 } from './store/actionCreators.js'
 import MiniPlayer from './miniPlayer/index.js'
 import NormalPlayer from './normalPlayer/index.js'
-import { getSongUrl, isEmptyObject } from '../../api/utils.js'
+import { getSongUrl, isEmptyObject, shuffle, findIndex } from '../../api/utils.js'
+import Toast from '../../baseUI/Toast/index.js'
 
 function Player (props) {
   // 目前播放时间
@@ -20,102 +21,64 @@ function Player (props) {
   const [duration, setDuration] = useState(0)
   // 记录当前的歌曲，以便下一次渲染时比对是否为一首歌
   const [preSong, setPreSong] = useState({})
-
+  const [modeText, setModeText] = useState('')
+  const toastRef = useRef()
   const audioRef = useRef()
 
   // 歌曲播放进度
   let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration
-  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong } = props
-  const { toggleFullScreenDispatch, togglePlayingDispatch, changeCurrentIndexDispatch, changeCurrentDispatch } = props
+  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong, mode, sequencePlayList: immutableSequencePlayList, playList: immutablePlayList } = props
+  const { 
+    toggleFullScreenDispatch,
+    togglePlayingDispatch,
+    changeCurrentIndexDispatch,
+    changeCurrentDispatch,
+    changePlayListDispatch, // 改变playList
+    changeModeDispatch, // 改变模式
+  } = props
 
-  let currentSong = immutableCurrentSong.toJS()
+  const currentSong = immutableCurrentSong.toJS()
+  const playList = immutablePlayList.toJS()
+  const sequencePlayList = immutableSequencePlayList.toJS()
+
   // 注意 audio标签在播放的过程中会不断地触发onTimeUpdate事件，
   // 在此需要更新currentTime变量
   const updateTime = useCallback(e => {
     setCurrentTime(e.target.currentTime)
   })
 
-  let playList = [
-    {
-      ftype: 0,
-      djId: 0,
-      a: null,
-      cd: '01',
-      crbt: null,
-      no: 1,
-      st: 0,
-      rt: '',
-      cf: '',
-      alia: [
-        '手游《梦幻花园》苏州园林版推广曲'
-      ],
-      rtUrls: [],
-      fee: 0,
-      s_id: 0,
-      copyright: 0,
-      h: {
-        br: 320000,
-        fid: 0,
-        size: 9400365,
-        vd: -45814
-      },
-      mv: 0,
-      al: {
-        id: 84991301,
-        name: '拾梦纪',
-        picUrl: 'http://p1.music.126.net/M19SOoRMkcHmJvmGflXjXQ==/109951164627180052.jpg',
-        tns: [],
-        pic_str: '109951164627180052',
-        pic: 109951164627180050
-      },
-      name: '拾梦纪',
-      l: {
-        br: 128000,
-        fid: 0,
-        size: 3760173,
-        vd: -41672
-      },
-      rtype: 0,
-      m: {
-        br: 192000,
-        fid: 0,
-        size: 5640237,
-        vd: -43277
-      },
-      cp: 1416668,
-      mark: 0,
-      rtUrl: null,
-      mst: 9,
-      dt: 234947,
-      ar: [
-        {
-          id: 12084589,
-          name: '妖扬',
-          tns: [],
-          alias: []
-        },
-        {
-          id: 12578371,
-          name: '金天',
-          tns: [],
-          alias: []
-        }
-      ],
-      pop: 5,
-      pst: 0,
-      t: 0,
-      v: 3,
-      id: 1416767593,
-      publishTime: 0,
-      rurl: null
+  // 改变播放模式
+  const changeMode = useCallback(() => {
+    let newMode = (mode + 1) % 3
+    if (newMode === 0) {
+      // 顺序播放
+      changePlayListDispatch(sequencePlayList)
+      let index = findIndex(currentSong, sequencePlayList)
+      changeCurrentIndexDispatch(index)
+      setModeText("顺序循环")
+    }else if (newMode === 1) {
+      // 单曲循环
+      changePlayListDispatch(sequencePlayList)
+      setModeText("单曲循环")
+    }else if(newMode === 2) {
+      // 随机播放
+      let newList = shuffle(sequencePlayList)
+      let index = findIndex(currentSong, newList)
+      changePlayListDispatch(newList)
+      changeCurrentIndexDispatch(index)
+      setModeText("随机播放")
     }
-  ]
-
+    changeModeDispatch(newMode)
+    // Toast提示
+    toastRef.current.show()
+  })
+  // 完善控制歌曲播放的逻辑
   // 先mock一份currentIndex
   useEffect(() => {
     // 默认播放第一个
     changeCurrentIndexDispatch(0)
   }, [])
+
   useEffect(() => {
     if (!playList.length ||
       currentIndex === -1 ||
@@ -175,7 +138,7 @@ function Player (props) {
     if (index < 0) index = playList.length - 1
     if (!playing) togglePlayingDispatch(true)
     changeCurrentIndexDispatch(index)
-  }, [playing])
+  }, [playList, playing, currentIndex, togglePlayingDispatch, changeCurrentIndexDispatch])
   // 3.下一首
   const handleNext = useCallback(() => {
     // 播放列表只有一首歌
@@ -184,10 +147,11 @@ function Player (props) {
       return
     }
     let index = currentIndex + 1
-    if (index >= playList.length) index = 0
+    if (index === playList.length) index = 0
     if (!playing) togglePlayingDispatch(true)
     changeCurrentIndexDispatch(index)
-  }, [playing])
+  }, [playList, playing, currentIndex, togglePlayingDispatch, changeCurrentIndexDispatch])
+
   return (
     <div>
       {isEmptyObject(currentSong) ?
@@ -217,12 +181,15 @@ function Player (props) {
           onProgressChange={onProgressChange}
           handlePrev={handlePrev}
           handleNext={handleNext}
+          mode={mode}
+          changeMode={changeMode}
         ></NormalPlayer>
       }
       <audio
         ref={audioRef}
         onTimeUpdate={updateTime}
       ></audio>
+      <Toast ref={toastRef} text={modeText}></Toast>
     </div>
   )
 }
