@@ -6,10 +6,10 @@ import ProgressCircle from '../../../baseUI/progress-circle/index.js'
 
 function MiniPlayer (props) {
   const miniPlayerRef = useRef()
-  const { song, fullScreen } = props
-  const { toggleFullScreen } = props
+  const { song, fullScreen, playing, percent } = props
+  const { toggleFullScreen, clickPlaying } = props
 
-  let percent = 0.2
+  // let percent = 0.2
 
   return (
     <CSSTransition
@@ -29,7 +29,8 @@ function MiniPlayer (props) {
       >
         <div className="icon">
           <div className="imgWrapper">
-            <img className="play" src={song.al.picUrl} width="40" height="40" alt="img" />
+            {/* 暂停时唱片停止旋转 */}
+            <img className={`play ${playing ? "" : "pause"}`} src={song.al.picUrl} width="40" height="40" alt="img" />
           </div>
         </div>
         <div className="text">
@@ -38,7 +39,12 @@ function MiniPlayer (props) {
         </div>
         <div className="control">
           <ProgressCircle radius={32} percent={percent}>
-            <i className="iconfont icon-mini icon-pause">&#xe650;</i>
+            {
+              playing ?
+                <i className="iconfont icon-mini icon-pause" onClick={(e) => clickPlaying(e, false)}>&#xe650;</i>
+                :
+                <i className="iconfont icon-mini icon-play" onClick={(e) => clickPlaying(e, true)}>&#xe61e;</i>
+            }
           </ProgressCircle>
         </div>
         <div className="control">

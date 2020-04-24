@@ -13,14 +13,14 @@ import {
   ProgressWrapper
 } from './style.js'
 import ProgressBar from '../../../baseUI/progress-bar/index.js'
-import { prefixStyle } from '../../../api/utils.js'
+import { prefixStyle, formatPlayTime } from '../../../api/utils.js'
 
 function NormalPlayer (props) {
   const normalPlayerRef = useRef()
   const cdWrapperRef = useRef()
 
-  const { song, fullScreen } = props
-  const { toggleFullScreen } = props
+  const { song, fullScreen, playing, percent, duration, currentTime } = props
+  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext } = props
 
   const transform = prefixStyle("transform")
   // 计算偏移的辅助函数
@@ -88,7 +88,6 @@ function NormalPlayer (props) {
     // 不置为none现在全屏播放器页面还是存在
     normalPlayerRef.current.style.display = "none"
   }
-
   return (
     <CSSTransition
       classNames="normal"
@@ -124,29 +123,37 @@ function NormalPlayer (props) {
         <Middle ref={cdWrapperRef}>
           <CDWrapper>
             <div className="cd">
-              <img className="image play" src={song.al.picUrl + "?param=400x400"} alt="背图" />
+              <img className={`image play ${playing ? "" : "pause"}`} src={song.al.picUrl + "?param=400x400"} alt="背图" />
             </div>
           </CDWrapper>
         </Middle>
         <Bottom className="bottom">
           <ProgressWrapper>
-            <span className="time time-l">0:00</span>
+            <span className="time time-l">{formatPlayTime(currentTime)}</span>
             <div className="progress-bar-wrapper">
-              <ProgressBar></ProgressBar>
+              <ProgressBar
+                percent={percent}
+                // 进度条被滑动或点击时用来改变percent的回调函数
+                percentChange={onProgressChange}
+              ></ProgressBar>
             </div>
-            <span className="time time-r">4:41</span>
+            <span className="time time-r">{formatPlayTime(duration)}</span>
           </ProgressWrapper>
           <Operators>
             <div className="icon">
               <i className="iconfont">&#xe625;</i>
             </div>
-            <div className="icon">
+            <div className="icon" onClick={handlePrev}>
               <i className="iconfont">&#xe6e1;</i>
             </div>
             <div className="icon">
-              <i className="iconfont icon-center">&#xe723;</i>
+              <i
+                className="iconfont icon-center"
+                onClick={e => clickPlaying(e, !playing)}
+                dangerouslySetInnerHTML={{ __html: playing ? "&#xe723;" : "&#xe731;" }}
+              ></i>
             </div>
-            <div className="icon">
+            <div className="icon" onClick={handleNext}>
               <i className="iconfont">&#xe718;</i>
             </div>
             <div className="icon">

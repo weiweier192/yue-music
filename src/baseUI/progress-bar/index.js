@@ -43,10 +43,21 @@ function ProgressBar (props) {
   const progressBtn = useRef()
   const [touch, setTouch] = useState({})
 
+  const { percent } = props
   const { percentChange } = props
 
   const transform = prefixStyle("transform")
   const progressBtnWidth = 12
+
+  // 监听percent
+  useEffect(() => {
+    if(percent>=0 && percent <=1 && !touch.initiated) {
+      const barWidth = progressBar.current.clientWidth-progressBtnWidth
+      const offsetWidth = percent*barWidth
+      progress.current.style.width = `${offsetWidth}px`
+      progressBtn.current.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+    }
+  }, [percent])
 
   // 当进度改变后，我们需要执行父组件传过来的回调函数
   const _changePercent = () => {
@@ -83,7 +94,7 @@ function ProgressBar (props) {
     endTouch.initiated = false
     setTouch(endTouch)
     // 滑动完成后
-    // _changePercent()
+    _changePercent()
   }
   /**
    * 1. 通过按钮的点击事件onTouchStart,
@@ -104,7 +115,7 @@ function ProgressBar (props) {
     const offsetWidth = Math.min(e.pageX - rect.left, barWidth)
     _offset(offsetWidth)
     // 点击后
-    // _changePercent()
+    _changePercent()
   }
   return (
     <ProgressBarWrapper>
