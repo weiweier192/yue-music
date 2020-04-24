@@ -13,6 +13,7 @@ import MiniPlayer from './miniPlayer/index.js'
 import NormalPlayer from './normalPlayer/index.js'
 import { getSongUrl, isEmptyObject, shuffle, findIndex } from '../../api/utils.js'
 import Toast from '../../baseUI/Toast/index.js'
+import {playMode} from '../../api/config.js'
 
 function Player (props) {
   // 目前播放时间
@@ -152,6 +153,15 @@ function Player (props) {
     changeCurrentIndexDispatch(index)
   }, [playList, playing, currentIndex, togglePlayingDispatch, changeCurrentIndexDispatch])
 
+  // 当前歌曲播放完成后的处理
+  const handleEnd = () => {
+    if(mode === playMode.loop) {
+      handleLoop()
+    }else {
+      handleNext()
+    }
+  }
+
   return (
     <div>
       {isEmptyObject(currentSong) ?
@@ -188,6 +198,7 @@ function Player (props) {
       <audio
         ref={audioRef}
         onTimeUpdate={updateTime}
+        onEnded={handleEnd}
       ></audio>
       <Toast ref={toastRef} text={modeText}></Toast>
     </div>
