@@ -1,13 +1,22 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import { SongItem, SongList } from './style.js'
+import {changePlayList, changeCurrentIndex,changeSequencePlayList} from '../../application/Player/store/actionCreators.js'
 import { getName } from '../../api/utils.js'
 
 const SongsList = React.forwardRef((props, refs) => {
   const { collectCount, showCollect, songs } = props
+  const {changeCurrentIndexDispatch, changePlayListDispatch, changeSequencePlayListDispatch} = props
+  // 接受触发动画的函数
+  const {musicAnimation} = props
   const totalCount = songs.length
+  // 播放选中的音乐
   const selectItem = (e, index) => {
-    console.log(index)
+    changePlayListDispatch(songs)
+    changeSequencePlayListDispatch(songs)
+    changeCurrentIndexDispatch(index)
+    musicAnimation(e.nativeEvent.clientX, e.nativeEvent.clientY)
   }
 
   let songList = list => {
@@ -52,6 +61,20 @@ const SongsList = React.forwardRef((props, refs) => {
   )
 })
 
+const mapDispatchToProps = dispatch => {
+  return {
+    changePlayListDispatch(data) {
+      dispatch(changePlayList(data))
+    },
+    changeCurrentIndexDispatch(data) {
+      dispatch(changeCurrentIndex(data))
+    },
+    changeSequencePlayListDispatch(data) {
+      dispatch(changeSequencePlayList(data))
+    }
+  }
+}
+
 SongsList.defaultProps = {
   collectCount: 0,
   showCollect: false,
@@ -63,4 +86,4 @@ SongsList.propTypes = {
   showCollect: PropTypes.bool,
 }
 
-export default React.memo(SongsList)
+export default connect(null, mapDispatchToProps)(React.memo(SongsList))

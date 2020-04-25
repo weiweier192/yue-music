@@ -75,12 +75,13 @@ function Player (props) {
     // Toast提示
     toastRef.current.show()
   })
+
   // 完善控制歌曲播放的逻辑
   // 先mock一份currentIndex
-  useEffect(() => {
-    // 默认播放第一个
-    changeCurrentIndexDispatch(0)
-  }, [])
+  // useEffect(() => {
+  //   // 默认播放第一个
+  //   changeCurrentIndexDispatch(0)
+  // }, [])
   useEffect(() => {
     if (!playList.length ||
       currentIndex === -1 ||
