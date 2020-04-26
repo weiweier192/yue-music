@@ -27,7 +27,7 @@ function Singers (props) {
   const { data, dispatch } = useContext(CategoryDataContext)
   // 获取category和alpha的值
   const { category, alpha } = data.toJS()
-  const { singerList, isLoading, pullUpLoading, pullDownLoading, pageCount } = props
+  const { singerList, isLoading, pullUpLoading, pullDownLoading, pageCount, songsCount } = props
   const { getHotSingerDispatch, updateDispatch, pullDownRefreshDispatch, pullUpRefreshDispatch } = props
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function Singers (props) {
           oldVal={alpha}
         ></Horizen>
       </NavContainer>
-      <ListContainer>
+      <ListContainer songsCount={songsCount}>
         <Scroll
           pullUp={handlePullUp}
           pullDown={handlePullDown}
@@ -120,7 +120,8 @@ const mapStateToProps = state => ({
   isLoading: state.getIn(['singers', 'isLoading']),
   pullUpLoading: state.getIn(['singers', 'pullUpLoading']),
   pullDownLoading: state.getIn(['singers', 'pullDownLoading']),
-  pageCount: state.getIn(['singers', 'pageCount'])
+  pageCount: state.getIn(['singers', 'pageCount']),
+  songsCount: state.getIn(["player", "playList"]).size
 })
 const mapDispatchToProps = dispatch => {
   return {

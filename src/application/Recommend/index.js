@@ -12,7 +12,7 @@ import Loading from '../../baseUI/loading/index'
 import { renderRoutes } from 'react-router-config'
 
 function Recommend (props) {
-  const { bannerList, recommendList, isLoading } = props
+  const { bannerList, recommendList, isLoading, songsCount } = props
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props
   // 优化
   useEffect(() => {
@@ -25,11 +25,10 @@ function Recommend (props) {
       getRecommendListDataDispatch()
     }
   }, [])
-
   const bannerListJS = bannerList ? bannerList.toJS() : []
   const recommendListJS = recommendList ? recommendList.toJS() : []
   return (
-    <Content>
+    <Content songsCount={songsCount}>
       <Scroll className="list" onScroll={forceCheck}>
         <div>
           <Slider bannerList={bannerListJS}></Slider>
@@ -49,7 +48,8 @@ const mapStateToProps = state => ({
   // 不然每次diff比对props时都是不一样的引用，导致不必要的重渲染，属于滥用immutable
   bannerList: state.getIn(['recommend', 'bannerList']),
   recommendList: state.getIn(['recommend', 'recommendList']),
-  isLoading: state.getIn(['recommend', 'isLoading'])
+  isLoading: state.getIn(['recommend', 'isLoading']), // 简单数据类型不需要使用toJS()
+  songsCount: state.getIn(['player', 'playList']).size // 尽量减少toJS()操作, size===length
 })
 const mapDispatchToProps = dispatch => {
   return {

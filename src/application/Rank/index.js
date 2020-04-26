@@ -13,7 +13,7 @@ import {
 import Scroll from '../../baseUI/scroll/index.js'
 
 function Rank (props) {
-  const { rankList:list, loading } = props
+  const { rankList:list, loading, songsCount } = props
   const { getRankListDataDispatch } = props
   // didMount时发送请求
   let rankList = list ? list.toJS() : []
@@ -70,7 +70,7 @@ function Rank (props) {
   // 榜单数据未加载出来之前全部隐藏
   let displayStyle = loading ? { "display": "none" } : { "display": "" }
   return (
-    <Container>
+    <Container songsCount={songsCount}>
       <Scroll>
         <div>
           <h2 className="official" style={displayStyle}>官方榜</h2>
@@ -86,7 +86,8 @@ function Rank (props) {
 
 const mapStateToProps = state => ({
   rankList: state.getIn(['rank', 'rankList']),
-  loading: state.getIn(['rank', 'loading'])
+  loading: state.getIn(['rank', 'loading']),
+  songsCount: state.getIn(["player", "playList"]).size
 })
 const mapDispatchToProps = dispatch => {
   return {

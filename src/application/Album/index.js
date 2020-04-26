@@ -18,7 +18,7 @@ function Album (props) {
   const [isMarquee, setIsMarquee] = useState(false)
   const musicNoteRef = useRef()
 
-  const { currentAlbum: currentAlbumImmutable, enterLoading } = props
+  const { currentAlbum: currentAlbumImmutable, enterLoading, songsCount } = props
   const { getAlbumDataDispatch } = props
 
   const id = props.match.params.id
@@ -117,7 +117,7 @@ function Album (props) {
       unmountOnExit
       onExited={props.history.goBack}
     >
-      <Container>
+      <Container songsCount={songsCount}>
         <Header
           title={title}
           handleClick={handleBack}
@@ -150,7 +150,8 @@ function Album (props) {
 
 const mapStateToProps = state => ({
   currentAlbum: state.getIn(['album', 'currentAlbum']),
-  enterLoading: state.getIn(['album', 'enterLoading'])
+  enterLoading: state.getIn(['album', 'enterLoading']),
+  songsCount: state.getIn(["player", "playList"]).size
 })
 
 const mapDispatchToProps = dispatch => {

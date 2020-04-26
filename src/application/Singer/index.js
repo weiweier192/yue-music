@@ -23,7 +23,7 @@ function Singer (props) {
   // 音符坠落动画
   const musicNoteRef = useRef()
 
-  const { artist: immutableArtist, songs: immutableSongs, loading } = props
+  const { artist: immutableArtist, songs: immutableSongs, loading, songsCount } = props
   const { getSingerDataDispatch } = props
 
   const artist = immutableArtist.size && immutableArtist.toJS()
@@ -105,7 +105,7 @@ function Singer (props) {
       unmountOnExit
       onExited={() => props.history.goBack()}
     >
-      <Container>
+      <Container songsCount={songsCount}>
         <Header ref={header} title={"头部"} handleClick={handleBack}></Header>
         <ImgWrapper ref={imageWrapper} bgUrl={artist.picUrl}>
           <div className="filter"></div>
@@ -134,7 +134,8 @@ function Singer (props) {
 const mapStateToProps = state => ({
   artist: state.getIn(["singerInfo", "artist"]),
   songs: state.getIn(["singerInfo", "songsOfArtist"]),
-  loading: state.getIn(["singerInfo", "loading"])
+  loading: state.getIn(["singerInfo", "loading"]),
+  songsCount: state.getIn(["player", 'playList']).size
 })
 const mapDispatchToProps = dispatch => {
   return {
