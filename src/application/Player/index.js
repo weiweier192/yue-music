@@ -25,9 +25,11 @@ function Player (props) {
   const [modeText, setModeText] = useState('')
   const toastRef = useRef()
   const audioRef = useRef()
+  // 当前的歌曲是否加载完成
+  const currentSongReady = useRef(true)
 
-  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong, 
-    mode, sequencePlayList: immutableSequencePlayList, playList: immutablePlayList 
+  const { fullScreen, playing, currentIndex, currentSong: immutableCurrentSong,
+    mode, sequencePlayList: immutableSequencePlayList, playList: immutablePlayList
   } = props
   const {
     toggleFullScreenDispatch,
@@ -37,7 +39,7 @@ function Player (props) {
     changePlayListDispatch, // 改变playList
     changeModeDispatch, // 改变模式
   } = props
-  
+
   // 歌曲播放进度
   let percent = isNaN(currentTime / duration) ? 0 : currentTime / duration
   const currentSong = immutableCurrentSong.toJS()
@@ -86,13 +88,21 @@ function Player (props) {
     if (!playList.length ||
       currentIndex === -1 ||
       !playList[currentIndex] ||
-      playList[currentIndex].id === preSong.id) return
+      playList[currentIndex].id === preSong.id ||
+      !currentSongReady.current
+    ) return
     let current = playList[currentIndex]
     changeCurrentDispatch(current) // 赋值currentSong
     setPreSong(current)
+    currentSongReady.current = false // 表示当前歌曲资源正在加载，不能切歌
     audioRef.current.src = getSongUrl(current.id)
     setTimeout(() => {
-      audioRef.current.play()
+      // .play() 返回一个promise
+      audioRef.current.play().then(() => {
+        currentSongReady.current = true // 表示当前歌曲加载完成，可以播放
+      }).catch(() => {
+        handleError()
+      })
     })
     togglePlayingDispatch(true) // 播放状态
     setCurrentTime(0) // 从头开始播放
@@ -103,7 +113,7 @@ function Player (props) {
   useEffect(() => {
     playing ? audioRef.current.play() : audioRef.current.pause()
   }, [playing])
-  
+
   // 通过点击播放|暂停按钮，来改变 playing
   const clickPlaying = useCallback((e, state) => {
     // 它可以阻止把事件分派到其它节点
@@ -160,6 +170,11 @@ function Player (props) {
       handleNext()
     }
   }
+  // 处理当前歌曲加载异常
+  const handleError = () => {
+    currentSongReady.current = true
+    alert("获取歌曲资源出错")
+  }
 
   return (
     <div className="player">
@@ -198,6 +213,7 @@ function Player (props) {
         ref={audioRef}
         onTimeUpdate={updateTime}
         onEnded={handleEnd}
+        onError={handleError}
       ></audio>
       <Toast ref={toastRef} text={modeText}></Toast>
     </div>
