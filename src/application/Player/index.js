@@ -162,7 +162,7 @@ function Player (props) {
   }
 
   return (
-    <div>
+    <div className="player">
       {isEmptyObject(currentSong) ?
         null
         :

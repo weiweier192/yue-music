@@ -8,6 +8,7 @@ import SongsList from '../SongsList/index.js'
 import { HEADER_HEIGHT } from '../../api/config.js'
 import { changeEnterLoading, getSingerInfo } from './store/actionCreators.js'
 import Loading from '../../baseUI/loading/index.js'
+import MusicNote from '../../baseUI/music-note/index.js'
 
 function Singer (props) {
   const [showStatus, setShowStatus] = useState(true)
@@ -19,6 +20,8 @@ function Singer (props) {
   const layer = useRef()
   // 图片初始高度
   const initialHeight = useRef(0)
+  // 音符坠落动画
+  const musicNoteRef = useRef()
 
   const { artist: immutableArtist, songs: immutableSongs, loading } = props
   const { getSingerDataDispatch } = props
@@ -26,6 +29,10 @@ function Singer (props) {
   const artist = immutableArtist.size && immutableArtist.toJS()
   const songs = immutableSongs.size && immutableSongs.toJS()
 
+  // 开启音符坠落动画
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation({x, y})
+  }
   // 往上偏移的尺寸，漏出圆角
   const OFFSET = 5
   useEffect(() => {
@@ -113,10 +120,12 @@ function Singer (props) {
             <SongsList
               songs={songs}
               showCollect={false}
+              musicAnimation={musicAnimation}
             ></SongsList>
           </Scroll>
         </SongListWrapper>
         {loading ? <Loading></Loading> : null}
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition>
   )

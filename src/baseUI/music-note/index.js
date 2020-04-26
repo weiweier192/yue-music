@@ -1,18 +1,19 @@
-import React, { useRef, useState, useEffect, useImperativeHandle } from 'react'
+import React, { forwardRef, useRef, useState, useEffect, useImperativeHandle } from 'react'
 import styled from 'styled-components'
 import style from '../../assets/global-style.js'
 import { prefixStyle } from '../../api/utils.js'
 
 const Container = styled.div`
   .icon_wrapper {
-    dislay: none;
+    display: none;
     position: fixed;
     z-index: 1000;
     margin-top: -10px;
     margin-left: -10px;
     color: ${style["theme-color"]};
     font-size: 14px;
-    transition: transform 1s cubic-dezier(.62, -0.1, .86, .57);
+    // 开启过渡效果
+    transition: transform 1s cubic-bezier(.62, -0.1, .86, .57);
     transform: translate3d(0, 0, 0);
     >div {
       transition: transform 1s;
@@ -33,7 +34,7 @@ const MusicNote = forwardRef((props, ref) => {
     return tempNode.firstChild
   }
   useEffect(() => {
-    for(let i=0; i<ICON_COUNT; ++i) {
+    for (let i = 0; i < ICON_COUNT; ++i) {
       let node = createNode(`<div class="iconfont">&#xe642;</div>`)
       // 添加3个音符
       iconsRef.current.appendChild(node)
@@ -43,8 +44,9 @@ const MusicNote = forwardRef((props, ref) => {
     domArray.forEach(item => {
       // item === icon_wrapper
       item.running = false
-      item.addEventListener("transitionend", function() {
-        this.style["display"] = "node"
+      item.addEventListener("transitionend", function () {
+        // item === this
+        this.style["display"] = "none"
         this.style[transform] = `translate3d(0, 0, 0)`
         this.running = false
         // icon == iconfont
@@ -54,30 +56,35 @@ const MusicNote = forwardRef((props, ref) => {
     })
   }, [])
   // 接下来是下落动画的处理逻辑
-  const startAnimation = ({x, y}) => {
-    for(let i=0; i<ICON_COUNT; ++i) {
+  const startAnimation = ({ x, y }) => {
+    for (let i = 0; i < ICON_COUNT; ++i) {
       let domArray = [].slice.call(iconsRef.current.children)
       let item = domArray[i]
       // 选择一个空闲的元素来开始动画
-      if(item.running === false) {
-        item.style.left = x+"px"
-        item.style.top = y+"px"
+      if (item.running === false) {
+        // 音符出现在鼠标点击的位置
+        item.style.left = x + "px"
+        item.style.top = y + "px"
         item.style.display = "inline-block"
+        let cute = null
+        x > 60 ? cute = -40 : cute = 40
         setTimeout(() => {
           item.running = true
+          // 750px 保证音符下降到超出屏幕底部
           item.style[transform] = `translate3d(0, 750px, 0)`
           let icon = item.querySelector("div")
-          icon.style[transform] = `translate3d(-40px, 0, 0)`
+          icon.style[transform] = `translate3d(${cute}px, 0, 0)`
         }, 20)
         break
       }
     }
   }
   // 将子组件内的方法提供给父组件调用
-  useImperativeHandle(ref, () => {
+  // 两个参数: 1.ref 2.return {}
+  useImperativeHandle(ref, () => ({
     // 动画开始
     startAnimation
-  })
+  }))
 
   return (
     <Container ref={iconsRef}></Container>

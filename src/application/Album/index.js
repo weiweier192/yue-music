@@ -10,17 +10,22 @@ import style from '../../assets/global-style.js'
 import { changeEnterLoading, getAlbumList } from './store/actionCreators.js'
 import Loading from '../../baseUI/loading/index.js'
 import SongsList from '../SongsList/index.js'
+import MusicNote from '../../baseUI/music-note/index.js'
 
 function Album (props) {
   const [showStatus, setShowStatus] = useState(true)
   const [title, setTitle] = useState('歌单')
   const [isMarquee, setIsMarquee] = useState(false)
+  const musicNoteRef = useRef()
 
   const { currentAlbum: currentAlbumImmutable, enterLoading } = props
   const { getAlbumDataDispatch } = props
 
   const id = props.match.params.id
 
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation({x, y})
+  }
   useEffect(() => {
     getAlbumDataDispatch(id)
   }, [getAlbumDataDispatch, id])
@@ -125,17 +130,19 @@ function Album (props) {
             <div>
               {renderTopDesc()}
               {renderMenu()}
-              {/* {renderSongList()} */}
               <SongsList
-                collectCount={getCount(currentAlbum.subscribedCount)}
+                collectCount={currentAlbum.subscribedCount}
                 showCollect={true}
-                songs={currentAlbum.tracks}>
+                songs={currentAlbum.tracks}
+                musicAnimation={musicAnimation}
+                >
               </SongsList>
             </div>
           </Scroll>
           : null
         }
         {enterLoading ? <Loading></Loading> : null}
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition >
   )
