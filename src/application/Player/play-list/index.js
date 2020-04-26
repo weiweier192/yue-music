@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { PlayListWrapper, ScrollWrapper, ListHeader, ListContent } from './style.js'
-import { changeShowPlayList, changeCurrentIndex, changePlayMode, changePlayList } from '../store/actionCreators.js'
+import { changeShowPlayList, changeCurrentIndex, changePlayMode, changePlayList, deleteSong } from '../store/actionCreators.js'
 import { prefixStyle, getName } from '../../../api/utils.js'
 import { playMode } from '../../../api/config.js'
 import Scroll from '../../../baseUI/scroll/index.js'
@@ -23,7 +23,8 @@ function PlayList (props) {
     togglePlayListDispatch,
     changeCurrentIndexDispatch,
     changeModeDispatch,
-    changePlayListDispatch
+    changePlayListDispatch,
+    deleteSongDispatch
   } = props
 
   const currentSong = immutableCurrentSong.toJS()
@@ -100,8 +101,13 @@ function PlayList (props) {
   // 实现点击切歌功能
   const handleChangeCurrentIndex = (e, index) => {
     e.stopPropagation()
-    if (currentIndex === index) return
+    // if (currentIndex === index) return
     changeCurrentIndexDispatch(index)
+  }
+  // 删除当前选中的歌曲
+  const handleDeleteSong = (e, song) => {
+    e.stopPropagation()
+    deleteSongDispatch(song)
   }
 
   return (
@@ -142,7 +148,7 @@ function PlayList (props) {
                         <span className="like">
                           <i className="iconfont">&#xe601;</i>
                         </span>
-                        <span className="delete">
+                        <span className="delete" onClick={e => handleDeleteSong(e, item)}>
                           <i className="iconfont">&#xe63d;</i>
                         </span>
                       </li>
@@ -182,6 +188,10 @@ const mapDispatchToProps = dispatch => {
     // 修改当前的歌曲列表
     changePlayListDispatch (data) {
       dispatch(changePlayList(data))
+    },
+    // 删除选中的歌曲
+    deleteSongDispatch(data) {
+      dispatch(deleteSong(data))
     }
   }
 }
