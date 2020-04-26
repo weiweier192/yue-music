@@ -20,9 +20,14 @@ function NormalPlayer (props) {
   const cdWrapperRef = useRef()
 
   const { song, fullScreen, playing, percent, duration, currentTime, mode } = props
-  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext, changeMode } = props
+  const { toggleFullScreen, clickPlaying, onProgressChange, handlePrev, handleNext, changeMode, toggleShowPlayList } = props
 
   const transform = prefixStyle("transform")
+
+  const handleShowPlayList = e => {
+    toggleShowPlayList(true)
+    e.stopPropagation()
+  }
   // 计算偏移的辅助函数
   const _getPosAndScale = () => {
     const targetWidth = 40
@@ -171,7 +176,7 @@ function NormalPlayer (props) {
             <div className="icon" onClick={handleNext}>
               <i className="iconfont">&#xe718;</i>
             </div>
-            <div className="icon">
+            <div className="icon" onClick={handleShowPlayList}>
               <i className="iconfont">&#xe640;</i>
             </div>
           </Operators>

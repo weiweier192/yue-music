@@ -14,6 +14,7 @@ import NormalPlayer from './normalPlayer/index.js'
 import { getSongUrl, isEmptyObject, shuffle, findIndex } from '../../api/utils.js'
 import Toast from '../../baseUI/Toast/index.js'
 import { playMode } from '../../api/config.js'
+import PlayList from './play-list/index.js'
 
 function Player (props) {
   // 目前播放时间
@@ -38,6 +39,7 @@ function Player (props) {
     changeCurrentDispatch,
     changePlayListDispatch, // 改变playList
     changeModeDispatch, // 改变模式
+    toggleShowPlayListDispatch
   } = props
 
   // 歌曲播放进度
@@ -188,6 +190,7 @@ function Player (props) {
           song={currentSong}
           toggleFullScreen={toggleFullScreenDispatch}
           clickPlaying={clickPlaying}
+          toggleShowPlayList={toggleShowPlayListDispatch}
         ></MiniPlayer>
       }
       {isEmptyObject(currentSong) ?
@@ -207,6 +210,7 @@ function Player (props) {
           handleNext={handleNext}
           mode={mode}
           changeMode={changeMode}
+          toggleShowPlayList={toggleShowPlayListDispatch}
         ></NormalPlayer>
       }
       <audio
@@ -215,6 +219,7 @@ function Player (props) {
         onEnded={handleEnd}
         onError={handleError}
       ></audio>
+      <PlayList></PlayList>
       <Toast ref={toastRef} text={modeText}></Toast>
     </div>
   )
@@ -238,7 +243,7 @@ const mapDispatchToProps = dispatch => {
     toggleFullScreenDispatch (data) {
       dispatch(changeFullScreen(data))
     },
-    togglePlayListDispatch (data) {
+    toggleShowPlayListDispatch (data) {
       dispatch(changeShowPlayList(data))
     },
     changeCurrentIndexDispatch (index) {
