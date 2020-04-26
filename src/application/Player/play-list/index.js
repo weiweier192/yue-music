@@ -38,7 +38,7 @@ function PlayList (props) {
     const className = current ? "icon-play" : ''
     const content = current ? "&#xe6e3;" : ''
     return (
-      <i className={`current iconfont ${className}`} dangerouslySetInnerHTML={{__html: content}}></i>
+      <i className={`current iconfont ${className}`} dangerouslySetInnerHTML={{ __html: content }}></i>
     )
   }
   // 选择播放模式
@@ -92,6 +92,18 @@ function PlayList (props) {
     listWrapperRef.current.style[transform] = `translate3d(0, 100%, 0)`
   }, [transform])
 
+  // 展示列表
+  const handleShowPlayList = (e, show) => {
+    e.stopPropagation()
+    togglePlayListDispatch(show)
+  }
+  // 实现点击切歌功能
+  const handleChangeCurrentIndex = (e, index) => {
+    e.stopPropagation()
+    if (currentIndex === index) return
+    changeCurrentIndexDispatch(index)
+  }
+
   return (
     <CSSTransition
       in={showPlayList}
@@ -105,9 +117,9 @@ function PlayList (props) {
       <PlayListWrapper
         ref={playListRef}
         style={isShow === true ? { display: "block" } : { display: "none" }}
-        onClick={() => togglePlayListDispatch(false)}
+        onClick={(e) => handleShowPlayList(e, false)}
       >
-        <div className="list_wrapper" ref={listWrapperRef}>
+        <div className="list_wrapper" ref={listWrapperRef} onClick={e => e.stopPropagation()}>
           <ListHeader>
             <h1 className="title">
               {getPlayMode()}
@@ -120,7 +132,11 @@ function PlayList (props) {
                 {
                   playList.map((item, index) => {
                     return (
-                      <li className="item" key={item.id}>
+                      <li
+                        className="item"
+                        key={item.id}
+                        onClick={(e) => handleChangeCurrentIndex(e, index)}
+                      >
                         {getCurrentIcon(item.id)}
                         <span className="text">{item.name} - {getName(item.ar)}</span>
                         <span className="like">
