@@ -2,14 +2,16 @@ import React, { useRef, useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { PlayListWrapper, ScrollWrapper, ListHeader, ListContent } from './style.js'
-import { changeShowPlayList, changeCurrentIndex, changePlayMode, changePlayList, deleteSong } from '../store/actionCreators.js'
-import { prefixStyle, getName } from '../../../api/utils.js'
+import { changeShowPlayList, changeCurrentIndex, changePlayMode, changePlayList, deleteSong, changeSequencePlayList, changeCurrentSong, changePlayingState } from '../store/actionCreators.js'
+import { prefixStyle, getName, shuffle, findIndex } from '../../../api/utils.js'
 import { playMode } from '../../../api/config.js'
 import Scroll from '../../../baseUI/scroll/index.js'
+import Confirm from '../../../baseUI/confirm/index.js'
 
 function PlayList (props) {
   const playListRef = useRef()
   const listWrapperRef = useRef()
+  const confirmRef = useRef()
   const [isShow, setIsShow] = useState(false)
   const {
     showPlayList,
@@ -24,7 +26,8 @@ function PlayList (props) {
     changeCurrentIndexDispatch,
     changeModeDispatch,
     changePlayListDispatch,
-    deleteSongDispatch
+    deleteSongDispatch,
+    clearListDispatch
   } = props
 
   const currentSong = immutableCurrentSong.toJS()
@@ -67,6 +70,26 @@ function PlayList (props) {
   const changeMode = (e) => {
     e.stopPropagation()
     let newMode = (mode + 1) % 3
+    if (newMode === 0) {
+      // 顺数播放
+      changePlayListDispatch(sequencePlayList)
+      let index = findIndex(currentSong, sequencePlayList)
+      changeCurrentIndexDispatch(index)
+    } else if (newMode === 1) {
+      // 单曲循环
+      changePlayListDispatch(sequencePlayList)
+    } else if (newMode === 2) {
+      // 随机播放
+      // 打乱歌曲顺序
+      let newList = shuffle(sequencePlayList)
+      // 找到新顺序的索引
+      let index = findIndex(currentSong, newList)
+      // 更改现有的列表顺序
+      changePlayListDispatch(newList)
+      // 改变当前歌曲的索引
+      changeCurrentIndexDispatch(index)
+    }
+    changeModeDispatch(newMode)
   }
   // 进入列表
   const onEnterCB = useCallback(() => {
@@ -101,13 +124,22 @@ function PlayList (props) {
   // 实现点击切歌功能
   const handleChangeCurrentIndex = (e, index) => {
     e.stopPropagation()
-    // if (currentIndex === index) return
+    if (currentIndex === index) return
     changeCurrentIndexDispatch(index)
   }
   // 删除当前选中的歌曲
   const handleDeleteSong = (e, song) => {
     e.stopPropagation()
     deleteSongDispatch(song)
+  }
+  // 点击确定删除后的逻辑
+  const handleConfirmClear = useCallback(() => {
+    // 删除列表
+    clearListDispatch()
+  })
+  // 显示提示按钮
+  const handleShowConfirm = () => {
+    confirmRef.current.show()
   }
 
   return (
@@ -129,7 +161,7 @@ function PlayList (props) {
           <ListHeader>
             <h1 className="title">
               {getPlayMode()}
-              <span className="iconfont clear" onClick={() => { }}>&#xe63d;</span>
+              <span className="iconfont clear" onClick={handleShowConfirm}>&#xe63d;</span>
             </h1>
           </ListHeader>
           <ScrollWrapper>
@@ -159,6 +191,13 @@ function PlayList (props) {
             </Scroll>
           </ScrollWrapper>
         </div>
+        <Confirm
+          ref={confirmRef}
+          text={"是否全部删除？"}
+          cancelBtnText={"取消"}
+          confirmBtnText={"确定"}
+          handleConfirm={handleConfirmClear}
+        />
       </PlayListWrapper>
     </CSSTransition>
   )
@@ -190,8 +229,22 @@ const mapDispatchToProps = dispatch => {
       dispatch(changePlayList(data))
     },
     // 删除选中的歌曲
-    deleteSongDispatch(data) {
+    deleteSongDispatch (data) {
       dispatch(deleteSong(data))
+    },
+    // 清除当前列表中的全部歌曲
+    clearListDispatch () {
+      // 1.清空两个列表
+      dispatch(changePlayList([]))
+      dispatch(changeSequencePlayList([]))
+      // 2.初始currentIndex
+      dispatch(changeCurrentIndex(-1))
+      // 3.关闭PlayList
+      dispatch(changeShowPlayList(false))
+      // 4.将当前歌曲置空
+      dispatch(changeCurrentSong({}))
+      // 5.重置播放状态
+      dispatch(changePlayingState(false))
     }
   }
 }
